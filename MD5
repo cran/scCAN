@@ -1,7 +1,7 @@
-81c4912f184dc97b0cbb97231d393677 *DESCRIPTION
-2d7a58d9a2f203dbebd2143b783e4647 *NAMESPACE
+dd22fc4907ac4c55d5d162bc9f9db164 *DESCRIPTION
+aae374ad0317f678a5fabf52ae6ed1bd *NAMESPACE
 34788efe54a63cdd65f253ce77add863 *R/SNF.R
-4f4643e2141cc9813201a1fec739ba5c *R/Utils.R
+c61b8c8d51f5423844eade2a393fd880 *R/Utils.R
 bc1ee6b23569b480b6b7bf3820ab0eab *R/affinityMatrix.R
 153be8daea67d7a75808a85ba4177495 *R/dist2.R
 2959c3cebe3a61eab4d306a64b262304 *R/estimateNumberOfClustersGivenGraph.R
@@ -15,5 +15,6 @@ bf56b7025ac72e80a92d216ca0fcb381 *inst/doc/Example.R
 df2ea8a60392de94d74e3b75d3255833 *inst/doc/Example.Rmd
 a82d32cec94c6084b41a2228812731e5 *inst/doc/Example.html
 a64df26e9cfa7c62cf492b434a8ac568 *man/SCE.Rd
+e5401cac4cb08bcc4bbe21827e2ff102 *man/adjustedRandIndex.Rd
 c6272301a69cbd5985e67ba9ec63872f *man/scCAN.Rd
 df2ea8a60392de94d74e3b75d3255833 *vignettes/Example.Rmd

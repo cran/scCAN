@@ -75,6 +75,12 @@
 
 }
 
+#' @title adjustedRandIndex
+#' @description The function to calculate adjusted Rand index value with the inputs of true clusters and predicted clusters
+#' @param x A vector that contain predicted cluster assignment.
+#' @param y A vector that contain true cluster assignment.
+#' @export
+#'
 adjustedRandIndex <- function (x, y)
 {
   x <- as.vector(x)
