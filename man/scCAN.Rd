@@ -11,7 +11,10 @@ scCAN(
   alpha = 0.5,
   n.iters = 10,
   ncores = 10,
-  r.seed = 1
+  r.seed = 1,
+  subsamp = T,
+  k = 2:15,
+  samp.size = 5000
 )
 }
 \arguments{
@@ -21,19 +24,26 @@ scCAN(
 
 \item{n.neighbors}{Number of neighboring cells that are used to caculate the edge's weight. The number of neighbors are set \code{n.neighbors = 30} by default.}
 
-\item{alpha}{A hyper-parameter that is used to calculate the network kernel. The value is set to \code{alpha = 0.5} by default.}
+\item{alpha}{A hyper parameter that control the weight of graph. This values is set to \code{alpha = 0.5} by default.}
 
 \item{n.iters}{A hyper-parameter to set the number of network fusion iterations. It is set to \code{n.iters = 10} by default.}
 
 \item{ncores}{Number of processor cores to use.}
 
 \item{r.seed}{A parameter to set a seed for reproducibility. This values is set to \code{r.seed = 1} by default.}
+
+\item{subsamp}{Enable subsampling process for big data. This values is set to \code{subsamp = T} by default.}
+
+\item{k}{A vector to search for optimal number of cluster.}
+
+\item{samp.size}{A parameter to control number of sub-sampled cells.}
 }
 \value{
 List with the following keys:
 \itemize{
 \item cluster - A numeric vector containing cluster assignment for each sample.
-\item k - The optimal number of cluster.
+\item k  - The optimal number of cluster.
+\item latent - The latent data generated from autoencoders.
 }
 }
 \description{
@@ -45,7 +55,7 @@ Subsequently, scCAN converts these compressed data into networks and unify those
 Then, scCAN uses a spectral clustering algorithm to obtain final clusters assignment.
 }
 \examples{
-\donttest{
+\dontrun{
 # Load the package and the example data (SCE dataset)
 library(scCAN)
 #Load example data

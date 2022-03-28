@@ -1,7 +1,7 @@
 Package: scCAN
 Type: Package
 Title: Single-Cell Clustering using Autoencoder and Network Fusion
-Version: 1.0.1
+Version: 1.0.2
 Authors@R: c(
     person("Bang", "Tran", , "bang.t.s@nevada.unr.edu", role = c("aut", "cre")),
     person("Duc", "Tran", role = c("aut")),
@@ -14,16 +14,20 @@ License: LGPL
 Encoding: UTF-8
 LazyData: true
 LazyDataCompression: xz
-Depends: R (>= 3.4), scDHA, FNN
-Imports: purrr, stats, markdown
-RoxygenNote: 7.1.1
+Depends: R (>= 3.5.0), scDHA, FNN, purrr
+biocViews: SummarizedExperiment, DelayedArray, DelayedMatrixStats,
+        HDF5Array
+Imports: stats, Matrix, ggplot2, umap,pheatmap,
+        rmarkdown,matrixStats,SummarizedExperiment, DelayedArray,
+        DelayedMatrixStats, HDF5Array
+RoxygenNote: 7.1.2
 Suggests: knitr
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2021-07-16 19:22:37 UTC; User
+Packaged: 2022-03-28 21:22:09 UTC; bangt
 Author: Bang Tran [aut, cre],
   Duc Tran [aut],
   Hung Nguyen [aut],
   Tin Nguyen [fnd]
 Repository: CRAN
-Date/Publication: 2021-07-19 08:00:05 UTC
+Date/Publication: 2022-03-28 21:40:02 UTC

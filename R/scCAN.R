@@ -16,10 +16,15 @@
 #' @param n.iters A hyper-parameter to set the number of network fusion iterations. It is set to \code{n.iters = 10} by default.
 #' @param ncores Number of processor cores to use.
 #' @param r.seed A parameter to set a seed for reproducibility. This values is set to \code{r.seed = 1} by default.
+#' @param subsamp Enable subsampling process for big data. This values is set to \code{subsamp = T} by default.
+#' @param alpha A hyper parameter that control the weight of graph. This values is set to \code{alpha = 0.5} by default.
+#' @param k A vector to search for optimal number of cluster.
+#' @param samp.size A parameter to control number of sub-sampled cells.
 #' @return List with the following keys:
 #' \itemize{
 #' \item cluster - A numeric vector containing cluster assignment for each sample.
-#' \item k - The optimal number of cluster.
+#' \item k  - The optimal number of cluster.
+#' \item latent - The latent data generated from autoencoders.
 #' }
 #'
 #' @references
@@ -27,7 +32,7 @@
 #' 1. Duc Tran, Hung Nguyen, Bang Tran, Carlo La Vecchia, Hung N. Luu, Tin Nguyen (2021). Fast and precise single-cell data analysis using a hierarchical autoencoder. Nature Communications, 12, 1029. doi: 10.1038/s41467-021-21312-2
 #
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Load the package and the example data (SCE dataset)
 #' library(scCAN)
 #' #Load example data
@@ -49,18 +54,26 @@
 #' }
 #' @export
 
-scCAN <- function(data, sparse = FALSE, n.neighbors = 30, alpha = 0.5, n.iters = 10, ncores = 10, r.seed = 1){
+scCAN <- function(data, sparse = FALSE, n.neighbors = 30, alpha = 0.5, n.iters = 10, ncores = 10, r.seed = 1, subsamp = T, k = 2:15,samp.size = 5000){
   set.seed(r.seed)
   result <- purrr::quietly(scDHA)(data,sparse = sparse, ncores = ncores, seed = r.seed)$result
-  if(nrow(data)>5000){
-    res <- cluster.big(result)
+  latent <- result$latent
+  if(subsamp ==T){
+    if(nrow(data)>5000){
+      res <- cluster.big(result, n.neighbors = n.neighbors, alpha = alpha, n.iters = n.iters, r.seed = r.seed,samp.size =samp.size, k = k)
+      res$latent <- latent
+    }else{
+      res <- cluster.small(result,n.neighbors = n.neighbors, alpha = alpha, n.iters = n.iters, r.seed = r.seed, k = k)
+      res$latent <- latent
+    }
   }else{
-    res <- cluster.small(result)
+    res <- cluster.small(result,n.neighbors = n.neighbors, alpha = alpha, n.iters = n.iters, r.seed = r.seed, k = k)
+    res$latent <- latent
   }
   res
 }
 
-cluster.big <- function(data, samp.size = 5000, n.neighbors = 30, alpha = 0.5, n.iters = 10, r.seed = 1){
+cluster.big <- function(data, samp.size = 5000, n.neighbors = 30, alpha = 0.5, n.iters = 10, r.seed = 1,k = 2:15){
   set.seed(r.seed)
 
   n_samples <- nrow(data$all.latent[[1]])
@@ -83,7 +96,7 @@ cluster.big <- function(data, samp.size = 5000, n.neighbors = 30, alpha = 0.5, n
   }
 
   W = SNF(all.aff, n.neighbors, n.iters)
-  res = estimateNumberOfClustersGivenGraph(W, NUMC=2:15)
+  res = estimateNumberOfClustersGivenGraph(W, NUMC=k)
   k1 <- res$`Eigen-gap best`
   k2 =res$`Eigen-gap 2nd best`
   k <- min(k1,k2)
@@ -98,12 +111,10 @@ cluster.big <- function(data, samp.size = 5000, n.neighbors = 30, alpha = 0.5, n
   groups[-ind]<-cluster2
 
   list(cluster = groups,
-       k = k,
-       k1 = k1,
-       k2 = k2)
+       k = k)
 }
 
-cluster.small <- function(data, n.neighbors = 30, alpha = 0.5, n.iters = 10, r.seed = 1){
+cluster.small <- function(data, n.neighbors = 30, alpha = 0.5, n.iters = 10, r.seed = 1,k = 2:15){
   set.seed(r.seed)
 
   all.sim <- list()
@@ -121,7 +132,7 @@ cluster.small <- function(data, n.neighbors = 30, alpha = 0.5, n.iters = 10, r.s
   }
 
   W = SNF(all.aff, n.neighbors, n.iters)
-  res = estimateNumberOfClustersGivenGraph(W, NUMC=2:15)
+  res = estimateNumberOfClustersGivenGraph(W, NUMC=k)
   k1 <- res$`Eigen-gap best`
   k2 =res$`Eigen-gap 2nd best`
   k <- min(k1,k2)

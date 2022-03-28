@@ -12,5 +12,6 @@ adjustedRandIndex(x, y)
 \item{y}{A vector that contain true cluster assignment.}
 }
 \description{
-The function to calculate adjusted Rand index value with the inputs of true clusters and predicted clusters
+The function to calculate adjusted Rand index value with the
+inputs of true clusters and predicted clusters
 }
