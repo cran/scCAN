@@ -51,20 +51,16 @@ dim(data)
 #      guides(colour=guide_legend(nrow = 1))
 #  p
 
-## ---- eval=TRUE---------------------------------------------------------------
-suppressPackageStartupMessages({
-library(SummarizedExperiment)
-})
-path <- "https://bioinformatics.cse.unr.edu/software/scCAN/data/pollen.rds"
-SCE <- readRDS(url(path,"rb"))
-# Get expression matrix
-data <- t(SummarizedExperiment::assay(SCE))
-# Get cell annotation
-label <- SummarizedExperiment::colData(SCE)
-
-## -----------------------------------------------------------------------------
-data[1:10, 1:10]
-dim(data)
+## ---- eval=FALSE--------------------------------------------------------------
+#  suppressPackageStartupMessages({
+#  library(SummarizedExperiment)
+#  })
+#  path <- "https://bioinformatics.cse.unr.edu/software/scCAN/data/pollen.rds"
+#  SCE <- readRDS(url(path,"rb"))
+#  # Get expression matrix
+#  data <- t(SummarizedExperiment::assay(SCE))
+#  # Get cell annotation
+#  label <- SummarizedExperiment::colData(SCE)
 
 ## ---- eval=FALSE--------------------------------------------------------------
 #  #Generate clustering result, the input matrix has rows as samples and columns as genes
@@ -75,8 +71,8 @@ dim(data)
 #  #The clustering result can be found here
 #  cluster <- result$cluster
 
-## -----------------------------------------------------------------------------
-head(label)
+## ---- eval=FALSE--------------------------------------------------------------
+#  head(label)
 
 ## ---- eval=FALSE--------------------------------------------------------------
 #  #Calculate adjusted Rand Index using mclust package
@@ -315,34 +311,35 @@ head(label)
 #                                                wilcox_threshold=0.001,
 #                                                logfc_threshold=1.5)
 
-## ---- eval=TRUE---------------------------------------------------------------
-# Load pre-saved the list of markers that are strongly expressed in a specific cluster
-path <-"https://bioinformatics.cse.unr.edu/software/scCAN/result/cluster_markers.rds"
-cluster_markers_list <- readRDS(url(path,"rb"))
-# Load PanglaoDB markers
-path <-"https://bioinformatics.cse.unr.edu/software/scCAN/result/panglao_markers.rds"
-panglao_markers<- readRDS(url(path,"rb"))
-# Caculate pair wise cell type/cluster probabilty using jaccard index
-celltype_prob <- scCAN::calculate_celltype_prob(cluster_markers_list,
-                                                panglao_markers,
-                                                type = "jacc")
-colnames(celltype_prob) <- names(panglao_markers)
-celltype_id <- matrixStats::rowMaxs(celltype_prob)
-celltype_prob[1:10,1:10]
+## ---- eval=FALSE--------------------------------------------------------------
+#  library(matrixStats)
+#  # Load pre-saved the list of markers that are strongly expressed in a specific cluster
+#  path <-"https://bioinformatics.cse.unr.edu/software/scCAN/result/cluster_markers.rds"
+#  cluster_markers_list <- readRDS(url(path,"rb"))
+#  # Load PanglaoDB markers
+#  path <-"https://bioinformatics.cse.unr.edu/software/scCAN/result/panglao_markers.rds"
+#  panglao_markers<- readRDS(url(path,"rb"))
+#  # Caculate pair wise cell type/cluster probabilty using jaccard index
+#  celltype_prob <- scCAN::calculate_celltype_prob(cluster_markers_list,
+#                                                  panglao_markers,
+#                                                  type = "jacc")
+#  colnames(celltype_prob) <- names(panglao_markers)
+#  celltype_id <- matrixStats::rowMaxs(celltype_prob)
+#  celltype_prob[1:10,1:10]
 
-## ----eval=TRUE----------------------------------------------------------------
-library(pheatmap)
-pheatmap(celltype_prob)
+## ----eval=FALSE---------------------------------------------------------------
+#  library(pheatmap)
+#  pheatmap(celltype_prob)
 
-## ---- eval=TRUE---------------------------------------------------------------
-path <-"https://bioinformatics.cse.unr.edu/software/scCAN/result/1.3M_scCAN.rds"
-res <- readRDS(url(path,"rb"))
-cluster <- res$cluster
-# Map the cluster that has highest Jaccard Index value with reference cell type
-celltype_idx <- apply(celltype_prob,1,function(x){which.max(x)}  )
-cell.name <- colnames(celltype_prob)[celltype_idx]
-# Assign reference cell type to all clusters discover by scCAN
-mapping.table <- data.frame(cluster = seq(1:19), cell_type = cell.name)
-mapped.ct <- mapping.table$cell_type[mapping.table$cluster[cluster]]
-mapped.ct[1:10]
+## ---- eval=FALSE--------------------------------------------------------------
+#  path <-"https://bioinformatics.cse.unr.edu/software/scCAN/result/1.3M_scCAN.rds"
+#  res <- readRDS(url(path,"rb"))
+#  cluster <- res$cluster
+#  # Map the cluster that has highest Jaccard Index value with reference cell type
+#  celltype_idx <- apply(celltype_prob,1,function(x){which.max(x)}  )
+#  cell.name <- colnames(celltype_prob)[celltype_idx]
+#  # Assign reference cell type to all clusters discover by scCAN
+#  mapping.table <- data.frame(cluster = seq(1:19), cell_type = cell.name)
+#  mapped.ct <- mapping.table$cell_type[mapping.table$cluster[cluster]]
+#  mapped.ct[1:10]
 

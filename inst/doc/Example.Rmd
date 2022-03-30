@@ -108,7 +108,7 @@ p
 # Download and analyze real human dataset
 ## Data downloading and clustering
 We will use a real dataset from Pollen et al.[@pollenLowcoverageSinglecellMRNA2014a] that is available on our website. This dataset has 301 cells sequenced from human tissues including blood, skin, brain, and stem cells. 
-```{r, eval=TRUE}
+```{r, eval=FALSE}
 suppressPackageStartupMessages({
 library(SummarizedExperiment)
 })
@@ -120,13 +120,7 @@ data <- t(SummarizedExperiment::assay(SCE))
 label <- SummarizedExperiment::colData(SCE)
 ```
 
-Check the expression matrix.
-```{r}
-data[1:10, 1:10]
-dim(data)
-```
-
-Next, we can cluster the example dataset using the following command. 
+Next, we can cluster dataset using the following command. 
 ```{r, eval=FALSE}
 #Generate clustering result, the input matrix has rows as samples and columns as genes
 start <- Sys.time()
@@ -143,10 +137,20 @@ cluster <- result$cluster
 
 
 This dataset also has an annotation file that includes true cell labels:
-```{r}
+```{r, eval=FALSE}
 head(label)
 ```
-
+```
+DataFrame with 6 rows and 2 columns
+          cell_type1 cell_type2
+            <factor>   <factor>
+Hi_2338_1       2338     dermal
+Hi_2338_2       2338     dermal
+Hi_2338_3       2338     dermal
+Hi_2338_4       2338     dermal
+Hi_2338_5       2338     dermal
+Hi_2338_6       2338     dermal
+```
 The annotation file is stored data frame in which rows are samples. The annotation file has two sets of labels: (i) *cell_type1* indicates cell types discovered from Pollen et al., (ii) *cell_type2* has annotation of tissues that the cells was taken. Users can compare the obtain clustering results against *cell_type1* for validation and visualization.
 
 ```{r, eval=FALSE}
@@ -439,7 +443,8 @@ cluster_markers_list <- scCAN::curate_markers(eval_gene_markers, gene_names,
                                               logfc_threshold=1.5)
 ```
 Next, we calculate the probability of a clusters belong to a reference cell type. Output from this step is a confusion matrix where rows represent scCAN's clusters and columns represent reference cell types. 
-```{r, eval=TRUE}
+```{r, eval=FALSE}
+library(matrixStats)
 # Load pre-saved the list of markers that are strongly expressed in a specific cluster
 path <-"https://bioinformatics.cse.unr.edu/software/scCAN/result/cluster_markers.rds"
 cluster_markers_list <- readRDS(url(path,"rb"))
@@ -454,16 +459,41 @@ colnames(celltype_prob) <- names(panglao_markers)
 celltype_id <- matrixStats::rowMaxs(celltype_prob)
 celltype_prob[1:10,1:10]
 ```
-
+```
+      Anterior pituitary gland cells Astrocytes Bergmann glia Cajal-Retzius cells Choroid plexus cells
+ [1,]                     0.01190476 0.00000000    0.00000000          0.04205607           0.02564103
+ [2,]                     0.03050847 0.12962963    0.08278146          0.02052786           0.02473498
+ [3,]                     0.00000000 0.00000000    0.00000000          0.00000000           0.00000000
+ [4,]                     0.04216867 0.08205128    0.05780347          0.03773585           0.01298701
+ [5,]                     0.02631579 0.01398601    0.01652893          0.00625000           0.00000000
+ [6,]                     0.01754386 0.00000000    0.00000000          0.02912621           0.02222222
+ [7,]                     0.02756892 0.10981308    0.07389163          0.04269663           0.02842377
+ [8,]                     0.02546296 0.02386117    0.01594533          0.08577406           0.01428571
+ [9,]                     0.03398058 0.02494331    0.01193317          0.15283843           0.02000000
+[10,]                     0.03030303 0.03608247    0.03488372          0.13270142           0.02614379
+      Dopaminergic neurons GABAergic neurons Immature neurons Interneurons Meningeal cells
+ [1,]           0.03246753       0.006711409       0.04651163   0.12146893     0.000000000
+ [2,]           0.01423488       0.014492754       0.02006689   0.09147609     0.017921147
+ [3,]           0.00000000       0.000000000       0.00000000   0.00625000     0.000000000
+ [4,]           0.00000000       0.013605442       0.06470588   0.06534091     0.013333333
+ [5,]           0.02000000       0.063157895       0.02542373   0.08333333     0.010204082
+ [6,]           0.00000000       0.026315789       0.06557377   0.02880658     0.000000000
+ [7,]           0.01038961       0.010526316       0.02729529   0.10769231     0.020887728
+ [8,]           0.01913876       0.009685230       0.03211009   0.16990291     0.007211538
+ [9,]           0.01758794       0.005089059       0.01923077   0.17224080     0.012626263
+[10,]           0.02649007       0.013698630       0.02366864   0.12535613     0.013422819
+```
 We can view the cluster that is strongly correlated with the reference cell type using heatmap plot. Color scale is reported by the value of *celltype_prob* for each cluster-label combination.
-```{r,eval=TRUE}
+```{r,eval=FALSE}
 library(pheatmap)
 pheatmap(celltype_prob)
 ```
 
+![](Ref_heatmap.png)
+
 We select the cluster that has highest probability value with reference cell type.
 
-```{r, eval=TRUE}
+```{r, eval=FALSE}
 path <-"https://bioinformatics.cse.unr.edu/software/scCAN/result/1.3M_scCAN.rds"
 res <- readRDS(url(path,"rb"))
 cluster <- res$cluster
@@ -475,6 +505,9 @@ mapping.table <- data.frame(cluster = seq(1:19), cell_type = cell.name)
 mapped.ct <- mapping.table$cell_type[mapping.table$cluster[cluster]]
 mapped.ct[1:10]
 ```
-
+```
+[1] "Interneurons"    "Pyramidal cells" "Astrocytes"      "Interneurons"    "Neurons"         "Neurons"        
+[7] "Pyramidal cells" "Neurons"         "Pyramidal cells" "Pyramidal cells"
+```
 # Reference
 
