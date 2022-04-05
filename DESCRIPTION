@@ -1,7 +1,7 @@
 Package: scCAN
 Type: Package
 Title: Single-Cell Clustering using Autoencoder and Network Fusion
-Version: 1.0.3
+Version: 1.0.4
 Authors@R: c(
     person("Bang", "Tran", , "bang.t.s@nevada.unr.edu", role = c("aut", "cre")),
     person("Duc", "Tran", role = c("aut")),
@@ -20,10 +20,10 @@ RoxygenNote: 7.1.2
 Suggests: knitr
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2022-03-29 19:06:47 UTC; btran
+Packaged: 2022-04-05 23:47:32 UTC; bangt
 Author: Bang Tran [aut, cre],
   Duc Tran [aut],
   Hung Nguyen [aut],
   Tin Nguyen [fnd]
 Repository: CRAN
-Date/Publication: 2022-03-30 07:20:02 UTC
+Date/Publication: 2022-04-06 00:10:02 UTC

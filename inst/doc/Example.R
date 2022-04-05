@@ -204,6 +204,34 @@ dim(data)
 #    mtext(name,side=3,line=-1.5,outer=TRUE,cex = 1.4)
 
 ## ---- eval=FALSE--------------------------------------------------------------
+#  suppressPackageStartupMessages({
+#  library(SummarizedExperiment)
+#  })
+#  path <- "https://bioinformatics.cse.unr.edu/software/scCAN/data/zilionis.rds"
+#  SCE <- readRDS(url(path,"rb"))
+#  # Get expression matrix
+#  data <- t(SummarizedExperiment::assay(SCE))
+#  # Get cell annotation
+#  label <- SummarizedExperiment::colData(SCE)
+#  
+#  # Detect rare cell types by increasing sample size and reducing number of neighboring cells
+#  res <- scCAN(data, samp.size = 10000, n.neighbors = 10)
+#  
+#  # Detect rare cell types by performing two-stage clustering analysis
+#  # Stage 1: Perform clustering on the whole data using scCAN with default settings
+#  res <- scCAN(data)
+#  cluster <- res$cluster
+#  
+#  # Stage 2: Perform clustering on each cluster obtain from stage 1
+#  cluster2 <- rep(NA, length(cluster))
+#  for (cl in unique(cluster)){
+#    idx <- which(cl == cluster)
+#    tmp <- scCAN(data[idx, ])
+#    cluster2[idx] <- paste0(cl, "_", tmp$cluster)
+#  }
+#  res$cluster2 <- cluster2
+
+## ---- eval=FALSE--------------------------------------------------------------
 #  # Loading
 #  # if (!require("BiocManager", quietly = TRUE))
 #  #     install.packages("BiocManager")

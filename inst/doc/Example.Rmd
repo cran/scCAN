@@ -55,20 +55,6 @@ result <- scCAN(data)
 #The clustering result can be found here 
 cluster <- result$cluster
 ```
-
-
-<!-- Now, we can view the of annotations of 1,000 cells that belong to 5 separate groups. -->
-
-<!-- ```{r} -->
-<!-- label[1:10] -->
-<!-- print(paste0("The number of cell types : ",length(unique(label)))) -->
-<!-- ``` -->
-<!-- The annotation file could be stored in a vector in which each element is a cell type label of each cell.  -->
-
-<!-- #Calculate adjusted Rand Index using mclust package -->
-<!-- ari <- round(scCAN::adjustedRandIndex(cluster,label), 2) -->
-<!-- print(paste0("ARI = ", ari)) -->
-
 Users can visualize the expression data with the new cluster annotation. To reduce the dimension, users can use the package *irlba* [@baglama2019package] to obtain the first 20 principal components, and the package *Rtsne* [@krijthe2018package] to obtain the transcriptome landscape using t-SNE. Finally, we can
 visualize the cell landscape using scatter plot available in *ggplot2* [@wickham2016ggplot2] package.
 
@@ -312,9 +298,58 @@ suppressPackageStartupMessages({
 
 ![3D Visualization of latent data with PCA, t-SNE and UMAP for Pollen dataset.](Pollen_3D.png)
 
+# Example code for rare cell type detection
+The sampling process is necessary to reduce both time and space complexity, but it can alter the capability of detecting rare cell types. By selecting 5,000 cells from a large dataset, we might end up with insufficient number of rare cells, and therefore reduce the chance of detecting them.
+
+We have developed two strategies to enhance the method's capability of detecting rare cell types. First, we now allow users to change the parameter *samp.size* so that they can increase the sample size, thus boosting the method's capability in detecting rare cell types. Second, we provide an instruction to perform multi-state clustering, i.e., further splitting the clustering results. When a cell type has too few cells, these cells are often mistakenly grouped with other cell types. By further splitting each clusters, we are able to detect rare cell types that would not be possible by performing one-stage clustering. 
+
+To demonstrate the efficiency of both solutions, we have tested them on the Zilionis dataset @zilionis2019single. The Zilionis dataset has 34,558 cells and 9 cell types. Among the 9 cell types, the tRBC cell type has only 108 cells (0.3\%). A sub-sample of 5,000 cells is expected to have approximately 19 tRBC cells, which might be insufficient for many clustering method to detect them. In is indeed the case for this dataset. When we use the default value of $samp.size=5,000$, the tRBC cells are groupped with tPlasma cells (panel B in the figure below).
+
+To demonstrate the efficiency of the first strategy, we set $samp.size=10,000$. The method is able to seperate tRBC cells (cluster 2 in panel C of the figure below). The method is expected to perform even better if we further increase the sample size.
+
+To demonstrate the efficiency of the second strategy, we performed a two-stage clustering using the the default setting of $samp.size=5,000$. In stage one, we partitioned the data using scCAN and obtained the clustering results. In stage two, we further partitioned each cluster obtained from stage one using the same method scCAN. Again, as shown in the figure below, the method is able to separate tRBC cells (cluster 2\_2 in panel D of the figure below)
+
+The code to detect rare cell types from Zilionis dataset using two proposed approaches are shown below:
+```{r, eval=FALSE}
+suppressPackageStartupMessages({
+library(SummarizedExperiment)
+})
+path <- "https://bioinformatics.cse.unr.edu/software/scCAN/data/zilionis.rds"
+SCE <- readRDS(url(path,"rb"))
+# Get expression matrix
+data <- t(SummarizedExperiment::assay(SCE))
+# Get cell annotation
+label <- SummarizedExperiment::colData(SCE)
+
+# Detect rare cell types by increasing sample size and reducing number of neighboring cells
+res <- scCAN(data, samp.size = 10000, n.neighbors = 10)
+
+# Detect rare cell types by performing two-stage clustering analysis
+# Stage 1: Perform clustering on the whole data using scCAN with default settings
+res <- scCAN(data)
+cluster <- res$cluster
+
+# Stage 2: Perform clustering on each cluster obtain from stage 1
+cluster2 <- rep(NA, length(cluster))
+for (cl in unique(cluster)){
+  idx <- which(cl == cluster)
+  tmp <- scCAN(data[idx, ])
+  cluster2[idx] <- paste0(cl, "_", tmp$cluster)
+}
+res$cluster2 <- cluster2
+```
+
+
+We can use the same approach presented above to to visualize the transcriptome landscape with true cell types and clusters obtained from scCAN.
+
+![Rare cell type detection result measured by F1 score using original scCAN and two rare cell types detection strategies.](Rare_cell.png)
+
+<!-- <br><br> -->
+<!-- From the Figure above, the transcriptome landscape and the cell types of the dataset are shown in Sub-figure A. Sub-figure B shows that scCAN mistakenly grouped tRBC cells with tPlasma cells when we used the default setting of $samp.size=5,000$. Sub-figure C shows the clustering results using the new parameter $samp.size=10,000$. With a sample size of 10,000, the method can properly separate tRBC cells and assigned them to cluster 2. The F1 score for the result presented in Sub-figure C is 0.9 which indicates that scCAN properly separated tRBC from the rest. Finally, Sub-figure D shows the two-stage clustering using the the default setting of $samp.size=5,000$. Cluster 2 were further split into two sub-clusters: 2\_1 and 2\_2. The tRBC cells were completely separated from the rest (cluster 2\_2) with an F1 score of 1. -->
+
 # Example code for in-depth analysis using scRNA-seq data and prior biological knowledge.
 ## Download data
-In this section, we investigate the scaling ability of scCAN for clustering big data (>1 million cells). We will use neural dataset obtained from multiple brain regions of two embryonic mice published by 10X Genomics [@genomics20171 , @zheng2017massively]. The dataset was stored in *DelayedArray* format that contains 1,300,774 cells and 27,998 genes. The *DelayedArray* stores data in physical hard disk and the data can be read to memory by small blocks. We will use *TENxBrainData* R package available from Bioconductor to efficiently load the data. Before running the following code, users need to make sure that they have sufficient memory (200+ GB of RAM) and data storage (10GB).
+In this section, we investigate the scaling ability of scCAN for clustering big data (>1 million cells). We will use neural dataset obtained from multiple brain regions of two embryonic mice published by 10X Genomics [@genomics20171, @zheng2017massively]. The dataset was stored in *DelayedArray* format that contains 1,300,774 cells and 27,998 genes. The *DelayedArray* stores data in physical hard disk and the data can be read to memory by small blocks. We will use *TENxBrainData* R package available from Bioconductor to efficiently load the data. Before running the following code, users need to make sure that they have sufficient memory (200+ GB of RAM) and data storage (10GB).
 
 ```{r, eval=FALSE}
 # Loading
@@ -379,8 +414,8 @@ message("Number of cluster = ", unique(cluster))
 
 ```
 ```
-## Running time: 51.37449 mins
-## Running time: 19
+## Running time = 51.37449 mins
+## Number of cluster = 19
 ```
 scCAN was able to cluster 1.3 million cells within 51 minutes with 19 discovered clusters.
 
@@ -510,4 +545,3 @@ mapped.ct[1:10]
 [7] "Pyramidal cells" "Neurons"         "Pyramidal cells" "Pyramidal cells"
 ```
 # Reference
-
