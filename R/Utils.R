@@ -83,6 +83,8 @@
 #' inputs of true clusters and predicted clusters
 #' @param x A vector that contain predicted cluster assignment.
 #' @param y A vector that contain true cluster assignment.
+#' @return An value number ranging from 0 to 1 where 1 indicates a perfect
+#' clustering result and 0 means random partition.
 #' @export
 #'
 adjustedRandIndex <- function (x, y)
@@ -127,7 +129,7 @@ get_cluster_markers <- function (input_data_matrix, labels_vector, threads = 1) 
   s1_list <- sort(unique(labels_vec))
 
   for (i in c(1:length(unique(s1_list)))) {
-    print(i)
+    message(i)
     store_lists[[s1_list[i]]] <- find_markers(data, labels_vec,
                                               identity = s1_list[i], threads = threads)
   }
@@ -151,7 +153,7 @@ find_markers <- function(input_data_matrix, cluster_labels, identity=1, threads 
   identity = as.character(identity)
   groups[which(groups==identity)] <- "a"
   groups[which(groups!="a")] <- "b"
-  print(table(groups))
+  message(table(groups))
   cl <- makeCluster(threads)
 
   res1 <- parLapply(cl, 1:nrow(input_data_matrix), fun=function(x){
@@ -164,9 +166,9 @@ find_markers <- function(input_data_matrix, cluster_labels, identity=1, threads 
   avg.na = apply(input_data_matrix[,groups!="a"], 1, mean)
 
   log2fc = avg.a / avg.na
-  print(length(log2fc))
+  message(length(log2fc))
   te <- Sys.time()
-  print(paste("AVG Time: ", te-tt))
+  message(paste("AVG Time: ", te-tt))
   return(list(res1, log2fc))
 }
 
@@ -265,7 +267,7 @@ curate_markers <- function (whole_list, gene_names, wilcox_threshold = 0.001, lo
                             wilcox_threshold), which(as.numeric(whole_list[[i]][[2]]) >
                                                        logfc_threshold))
     c_markers <- gene_names[intersect(c1, non_na)]
-    print(length(c_markers))
+    message(length(c_markers))
     if (length(c_markers) == 0) {
       subset1 <- which(as.numeric(whole_list[[i]][[2]]) >
                          logfc_threshold)
@@ -274,7 +276,7 @@ curate_markers <- function (whole_list, gene_names, wilcox_threshold = 0.001, lo
       len_pos <- c(1:length(whole_list[[i]][[1]]))
       len_sorted <- len_pos[sorted_wilcox]
       selected_pos <- intersect(len_sorted, subset1)[1:100]
-      print(as.numeric(whole_list[[i]][[1]])[selected_pos])
+      message(as.numeric(whole_list[[i]][[1]])[selected_pos])
       c_markers <- gene_names[selected_pos]
     }
     store_genes[[i]] <- c_markers

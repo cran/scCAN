@@ -1,14 +1,15 @@
 ---
-title: "&nbsp;"
-author:
+title: '&nbsp;'
+author: "null"
 output:
   html_document:
     df_print: paged
-
+  pdf_document: default
 editor_options:
   chunk_output_type: inline
 csl: ieee.csl
 bibliography: scCAN.bib
+
 vignette: |
   %\VignetteIndexEntry{scCAN} 
   %\usepackage[UTF-8]{inputenc}

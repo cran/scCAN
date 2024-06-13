@@ -1,10 +1,10 @@
-## ---- eval=FALSE--------------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  install.packages("scCAN")
 
 ## -----------------------------------------------------------------------------
 library(scCAN)
 
-## ---- eval=TRUE---------------------------------------------------------------
+## ----eval=TRUE----------------------------------------------------------------
 #Load example data (SCE dataset)
 data("SCE")
 #Get data matrix and label
@@ -15,13 +15,13 @@ data <- t(SCE$data); label <- as.character(SCE$cell_type1)
 data[1:10,1:10]
 dim(data)
 
-## ---- eval=FALSE--------------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  #Generate clustering result. The input matrix has rows as samples and columns as genes
 #  result <- scCAN(data)
 #  #The clustering result can be found here
 #  cluster <- result$cluster
 
-## ---- eval=FALSE--------------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  suppressPackageStartupMessages({
 #  library(irlba)
 #  library(ggplot2)
@@ -51,7 +51,7 @@ dim(data)
 #      guides(colour=guide_legend(nrow = 1))
 #  p
 
-## ---- eval=FALSE--------------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  suppressPackageStartupMessages({
 #  library(SummarizedExperiment)
 #  })
@@ -62,7 +62,7 @@ dim(data)
 #  # Get cell annotation
 #  label <- SummarizedExperiment::colData(SCE)
 
-## ---- eval=FALSE--------------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  #Generate clustering result, the input matrix has rows as samples and columns as genes
 #  start <- Sys.time()
 #  result <- scCAN(data)
@@ -71,15 +71,15 @@ dim(data)
 #  #The clustering result can be found here
 #  cluster <- result$cluster
 
-## ---- eval=FALSE--------------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  head(label)
 
-## ---- eval=FALSE--------------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  #Calculate adjusted Rand Index using mclust package
 #  ari <- round(scCAN::adjustedRandIndex(cluster,label$cell_type1), 2)
 #  print(paste0("ARI = ", ari))
 
-## ---- eval=FALSE--------------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  suppressPackageStartupMessages({
 #    library(ggplot2)
 #    library(cowplot)
@@ -140,7 +140,7 @@ dim(data)
 #                  grid=TRUE, box=TRUE,color = colors)
 #  
 
-## ---- eval=FALSE--------------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #    suppressPackageStartupMessages({
 #    library(umap)
 #    })
@@ -149,7 +149,7 @@ dim(data)
 #    tsne.data <- Rtsne(latent, check_duplicates = F,dims = 2)$Y
 #    umap.data <- umap(latent,n_components = 2)$layout
 
-## ---- eval=FALSE--------------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  suppressPackageStartupMessages({
 #    library(Rtsne)
 #    library(umap)
@@ -161,7 +161,7 @@ dim(data)
 #    tsne.data <- Rtsne(latent, check_duplicates = F,dims = 3)$Y
 #    umap.data <- umap(latent,n_components = 3)$layout
 
-## ---- eval=FALSE--------------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  suppressPackageStartupMessages({
 #    library(ggplot2)
 #    library(cowplot)
@@ -203,7 +203,7 @@ dim(data)
 #  
 #    mtext(name,side=3,line=-1.5,outer=TRUE,cex = 1.4)
 
-## ---- eval=FALSE--------------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  suppressPackageStartupMessages({
 #  library(SummarizedExperiment)
 #  })
@@ -231,7 +231,7 @@ dim(data)
 #  }
 #  res$cluster2 <- cluster2
 
-## ---- eval=FALSE--------------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  # Loading
 #  # if (!require("BiocManager", quietly = TRUE))
 #  #     install.packages("BiocManager")
@@ -255,7 +255,7 @@ dim(data)
 #  rownames(data) <- cell.names$Barcode
 #  colnames(data) <- gene.names$Ensembl
 
-## ---- eval=FALSE--------------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  # Set number of processing unit to 20
 #  setAutoBPPARAM(BiocParallel::MulticoreParam(workers=4))
 #  # Calculate total count for each gene
@@ -267,7 +267,7 @@ dim(data)
 #  genes <- as.vector(gene.names$Ensembl)[-idx]
 #  colnames(data) <- genes
 
-## ---- eval=FALSE--------------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  # Devide data into different block
 #  trunks<- seq(from = 1, to = nrow(data))
 #  seg <- split(trunks, ceiling(seq_along(trunks)/50000))
@@ -288,7 +288,7 @@ dim(data)
 #  message("Number of cluster = ", unique(cluster))
 #  
 
-## ---- eval=FALSE--------------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  # Download the cell type with markers gene
 #  url <- "https://panglaodb.se/markers/PanglaoDB_markers_27_Mar_2020.tsv.gz"
 #  tmp <- tempfile()
@@ -339,7 +339,7 @@ dim(data)
 #                                                wilcox_threshold=0.001,
 #                                                logfc_threshold=1.5)
 
-## ---- eval=FALSE--------------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  library(matrixStats)
 #  # Load pre-saved the list of markers that are strongly expressed in a specific cluster
 #  path <-"https://bioinformatics.cse.unr.edu/software/scCAN/result/cluster_markers.rds"
@@ -359,7 +359,7 @@ dim(data)
 #  library(pheatmap)
 #  pheatmap(celltype_prob)
 
-## ---- eval=FALSE--------------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  path <-"https://bioinformatics.cse.unr.edu/software/scCAN/result/1.3M_scCAN.rds"
 #  res <- readRDS(url(path,"rb"))
 #  cluster <- res$cluster

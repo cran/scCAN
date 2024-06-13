@@ -12,7 +12,7 @@ scCAN(
   n.iters = 10,
   ncores = 10,
   r.seed = 1,
-  subsamp = T,
+  subsamp = TRUE,
   k = 2:15,
   samp.size = 5000
 )
@@ -56,6 +56,7 @@ Then, scCAN uses a spectral clustering algorithm to obtain final clusters assign
 }
 \examples{
 \dontrun{
+# Not run if scDHA has not installed yet.
 # Load the package and the example data (SCE dataset)
 library(scCAN)
 #Load example data
@@ -72,7 +73,7 @@ cluster <- result$cluster
 
 #Calculate adjusted Rand Index
 ari <- round(scCAN::adjustedRandIndex(cluster,label), 2)
-print(paste0("ARI = ", ari))
+message(paste0("ARI = ", ari))
 
 }
 }

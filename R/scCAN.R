@@ -33,6 +33,7 @@
 #
 #' @examples
 #' \dontrun{
+#' # Not run if scDHA has not installed yet.
 #' # Load the package and the example data (SCE dataset)
 #' library(scCAN)
 #' #Load example data
@@ -49,16 +50,16 @@
 #'
 #' #Calculate adjusted Rand Index
 #' ari <- round(scCAN::adjustedRandIndex(cluster,label), 2)
-#' print(paste0("ARI = ", ari))
+#' message(paste0("ARI = ", ari))
 #'
 #' }
 #' @export
 
-scCAN <- function(data, sparse = FALSE, n.neighbors = 30, alpha = 0.5, n.iters = 10, ncores = 10, r.seed = 1, subsamp = T, k = 2:15,samp.size = 5000){
+scCAN <- function(data, sparse = FALSE, n.neighbors = 30, alpha = 0.5, n.iters = 10, ncores = 10, r.seed = 1, subsamp = TRUE, k = 2:15,samp.size = 5000){
   set.seed(r.seed)
   result <- purrr::quietly(scDHA)(data,sparse = sparse, ncores = ncores, seed = r.seed)$result
   latent <- result$latent
-  if(subsamp ==T){
+  if(subsamp ==TRUE){
     if(nrow(data)>5000){
       res <- cluster.big(result, n.neighbors = n.neighbors, alpha = alpha, n.iters = n.iters, r.seed = r.seed,samp.size =samp.size, k = k)
       res$latent <- latent

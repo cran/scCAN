@@ -11,6 +11,10 @@ adjustedRandIndex(x, y)
 
 \item{y}{A vector that contain true cluster assignment.}
 }
+\value{
+An value number ranging from 0 to 1 where 1 indicates a perfect
+clustering result and 0 means random partition.
+}
 \description{
 The function to calculate adjusted Rand index value with the
 inputs of true clusters and predicted clusters
